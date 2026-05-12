@@ -20,6 +20,8 @@ def layer_name(layer_type):
 
 # A port of the models found in musicnn to Tensorflow 2.x.
 
+# def create_model
+
 def timbral_block(inputs, filters, kernel_size, is_training, padding="valid", activation=activations.relu):
     conv = layers.Conv2D(filters=filters, 
                                   kernel_size=kernel_size, 
@@ -131,7 +133,7 @@ def backend(feature_map, is_training, n_classes, output_units):
 
     logits = layers.Dense(activation=None, units=n_classes, name=layer_name('dense'))(dense_dropout)
 
-    return logits, bn_dense, mean_pool, max_pool
+    return logits
 
 
 def build_musicnn(x, is_training, n_classes, n_filters_frontend=1.6, n_filters_midend=64, n_units_backend=200):
@@ -144,17 +146,8 @@ def build_musicnn(x, is_training, n_classes, n_filters_frontend=1.6, n_filters_m
     midend_features = tf.concat(midend_features_list, 2)
 
     # backend: temporal pooling
-    logits, penultimate, mean_pool, max_pool = backend(midend_features, is_training, n_classes, n_units_backend)
-
-    # [extract features] temporal and timbral features from the front-end
-    timbral = tf.concat([frontend_features_list[0], frontend_features_list[1]], 2)
-    temporal = tf.concat([frontend_features_list[2], frontend_features_list[3], frontend_features_list[4]], 2)
-    # [extract features] mid-end features
-    cnn1, cnn2, cnn3 = midend_features_list[1], midend_features_list[2], midend_features_list[3]
-    mean_pool = tf.squeeze(mean_pool, [2])
-    max_pool = tf.squeeze(max_pool, [2])
-
-    return logits, timbral, temporal, cnn1, cnn2, cnn3, mean_pool, max_pool, penultimate
+    logits = backend(midend_features, is_training, n_classes, n_units_backend)
+    return logits
 
 
 def define_model(x, is_training, model, n_classes):
@@ -192,11 +185,10 @@ if __name__ == '__main__':
     # n_frames is placeholder, we set some random value first
     n_frames = 187
     inputs = keras.Input(shape=(n_frames, config.N_MELS))
-    model_layers = ModelLayer(False, model, n_classes)(inputs)
-    # model_layers = define_model(inputs, False, model, n_classes)
-    outputs = model_layers[0]
+    model_outputs = ModelLayer(False, model, n_classes)(inputs)
+    # model_outputs = define_model(inputs, False, model, n_classes)
 
-    model_keras = keras.Model(inputs=inputs, outputs=outputs)
+    model_keras = keras.Model(inputs=inputs, outputs=model_outputs)
     keras.utils.plot_model(model_keras, 'musicnn_arch.png', show_shapes=True)
 
     ckpt_path = os.path.dirname(__file__) + '\\musicnn\\musicnn\\'+model+'\\'
