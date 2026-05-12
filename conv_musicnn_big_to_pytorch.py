@@ -141,6 +141,8 @@ model = keras.Model(inputs=inputs, outputs=logits)
 
 # hardcoded again -- change if needed
 ckpt_path = os.path.dirname(__file__) + '\\musicnn\\musicnn\\MSD_musicnn_big\\'
+with open(ckpt_path + 'checkpoint', 'w') as ckpt_if:
+    ckpt_if.write(f"model_checkpoint_path: {repr(ckpt_path)}\nall_model_checkpoint_paths: {repr(ckpt_path)}\n")
 
 reader = tf.train.load_checkpoint(ckpt_path)
 var_map = reader.get_variable_to_shape_map()
