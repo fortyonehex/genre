@@ -52,7 +52,7 @@ predicted_tags = np.exp(pred_model.predict(batch))
 
 sum_probs = np.sum(predicted_tags, axis=0)
 top_labels = [labels[x] for x in np.argsort(sum_probs)[::-1]]
-print(top_labels)
+print("Top 5 labels:", ", ".join(top_labels[:5]))
 
 fig, ax = plt.subplots()
 im = ax.imshow(predicted_tags.T, interpolation='nearest', aspect='auto')
