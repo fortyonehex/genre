@@ -65,13 +65,15 @@ def resnet_layer(x):
 import librosa
 import numpy as np
 
-audio_file = 'C:\\Users\\Bobby\\Documents\\Coding\\genre\\musicnn\\audio\\TRWJAZW128F42760DD_test.mp3'
+audio_file = 'C:\\Users\\Bobby\\Documents\\Coding\\genre\\musicnn\\audio\\joram-moments_of_clarity-08-solipsism-59-88.mp3'
+# audio_file = 'C:\\Users\\Bobby\\Documents\\Coding\\genre\\musicnn\\audio\\TRWJAZW128F42760DD_test.mp3'
 
 print("Loading audio...")
 
 input_length = 3
+overlap_length = 1
 n_frames = librosa.time_to_frames(input_length, sr=config.SR, n_fft=config.FFT_SIZE, hop_length=config.FFT_HOP) + 1
-overlap = n_frames
+overlap = librosa.time_to_frames(overlap_length, sr=config.SR, n_fft=config.FFT_SIZE, hop_length=config.FFT_HOP) + 1
 
 # computing log-mel spectrogram
 audio, sr = librosa.load(audio_file, sr=config.SR)
@@ -157,14 +159,23 @@ for v in model.variables:
     else:
         print(f"WARNING: {v.path} not in checkpoint")
 
-print(model.variables)
+# for layer in model.layers:
+#     if isinstance(layer, layers.BatchNormalization):
+#         print(layer.name, layer.moving_mean.numpy()[:5], layer.moving_variance.numpy()[:5])
+#     elif isinstance(layer, layers.Conv2D):
+#         print(layer.name, layer.weights[0].numpy().flatten()[:10])
+
+# print(model.variables)
 
 # checkpoint = tf.train.Checkpoint(model)
 # status = checkpoint.restore(tf.train.latest_checkpoint(ckpt_path))
 # status.assert_existing_objects_matched()
 # print(status)
 
-print(repr(batch))
-predicted_tags = model(np.expand_dims(batch[0], 0), training=False)
+predicted_tags = model.predict(batch)
 
-print(repr(predicted_tags))
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots()
+im = ax.imshow(np.exp(predicted_tags.T), interpolation='nearest', aspect='auto')
+ax.set_yticks(range(n_classes), labels=labels)
+plt.show()
