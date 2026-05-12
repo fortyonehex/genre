@@ -6,14 +6,14 @@ import config
 
 # -----------------------------------
 # THE MOST IMPORTANT VARIABLES YOU SHOULD CHANGE 
-# the length (in seconds) of each input you want to pass to the model
+# the length (in seconds) of each input passed to the model
 input_length = 3
 
-# the time skipped (in seconds) between each input you want to pass to the model
+# the time skipped (in seconds) between each input passed to the model
 overlap_length = 3
 
 # the path to the audio file you wish to predict
-audio_file = './test_audio/TRWJAZW128F42760DD_test.mp3'
+audio_file = './test_audio/there_it_is_macleod.mp3'
 # ------------------------------------
 
 labels = config.MSD_LABELS
