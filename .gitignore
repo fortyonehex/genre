@@ -1,3 +1,4 @@
 env/**
 musicnn/**
-*.png
+__pycache__/**
+MSD_musicnn_big/checkpoint
